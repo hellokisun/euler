@@ -127,14 +127,46 @@ class Euler9:
                         return
 
 class Euler10:
-    def run(self):
-        primes = {}
-        for i in range(3, 2000000, 2):
-            if(Util.isPrime(i)):
-                print(i)
-                sum += i
-        print(sum)
+    # given a prime number, returns the next prime number in sequence
+    def nextPrime(n, sieve):
+        if n < 2:
+            return -1
+        # n > 3, get the next item in sieve
+        index = list.index(n)
+        return 
+        
 
+    
+    
+    def run(self):
+
+        max = 2000000
+        maxSqrt = int(max ** 0.5)
+
+        print("max:", max, "; sqrt(max):", maxSqrt)
+
+        # create sieve
+        sieve = list(range(1,max,2))
+        
+        # remove 1 and add 2
+        sieve[0] = 2
+        
+        # starting prime
+        prime = 3
+        
+        while prime**2 < maxSqrt :
+            #print("current prime:", prime, "  removed:", end='')
+            for i in range(prime**2, maxSqrt, prime):
+                try: 
+                    sieve.remove(i)
+                    #print(i, end=' ')
+                except ValueError:
+                    pass 
+            prime = sieve[sieve.index(prime)+1] # should return the next prime
+            #print()
+
+
+        print(sum(sieve))
 
 # main code starts here
 
@@ -143,4 +175,4 @@ t0 = time.time()
 euler = Euler10()
 euler.run()
 t1 = time.time()
-print(t1-t0)
+print("runtime:", t1-t0)
