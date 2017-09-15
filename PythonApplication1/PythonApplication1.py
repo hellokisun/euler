@@ -2,6 +2,8 @@ import sys
 import operator
 import time
 import numpy
+import itertools
+import math
 from functools import reduce
 
 class Util:
@@ -396,7 +398,8 @@ class Euler13:
 class Euler14: 
     # answer : 837799
     # runtime: 69.31155300140381
-    # note: using bitwise operations did not affect runtime...
+    # note: using bitwise operations did not affect runtime, nor did not using membership function for dict
+
     def run(self): 
         # use a dictionary to keep chain #s for numbers
         collatz = {1:1}
@@ -410,8 +413,8 @@ class Euler14:
                 if n in collatz: 
                     count += collatz[n]
                     break
-                if n & 1 == 0:    # if even, n = n/2 (bitshift to right)
-                    n = n >> 1
+                if n % 2 == 0:    # if even, n = n/2
+                    n /= 2 
                 else:
                     n = (3*n)+1   # if odd, n = 3n+1
                 count += 1      # increment count 
@@ -422,17 +425,75 @@ class Euler14:
         maxchain = max(collatz, key=collatz.get)
         print("answer:", maxchain)
 
+class Euler14_2:
+    # answer : 837799
+    # runtime: 49.1329185962677
+    # note: second try, using recursion to cache all path sizes for a number
+    #       starting from 1,000,000 and going down to 2 did not change runtime
+    collatz = {1:1}
+
+    def colget(self, n):
+        if n == 1:          # base case
+            return 1
+        if n in self.collatz:    # if in dictionary, return cached size
+            return self.collatz[n]
+        if n % 2 == 0:      # if n is even, n/2
+            chainsize = self.colget(n/2)+1
+            self.collatz[n] = chainsize
+            return chainsize
+        elif n % 2 == 1:    # if n is odd, 3n+1
+            chainsize = self.colget(3*n+1)+1
+            self.collatz[n] = chainsize
+            return chainsize
+        else:
+            raise ValueError("you suck")
+
+    def run(self): 
+        # use a dictionary to keep chain #s for numbers
+        longest = 1
+        maxnum = 1000000
+
+        for i in range(2, maxnum+1):
+            self.colget(i)
+        
+        maxchain = max(self.collatz, key=self.collatz.get)
+        print("answer:", maxchain)
+
 class Euler15: 
-    # answer : 
-    # runtime: 
+    # answer : 137846528820
+    # runtime: 0.0005002021789550781
 
-    def run(self):
+    pathcount = 0
+
+    # recursively find all possible paths
+    # path = current path in string format
+    # r = right moves left to use
+    # d = down moves left to use
+    # TAKES TOO LONG!!! the problem is a "central binomial coefficient"
+    def pathfind(self, r, d):
+        # print("r:",r,"d:",d)
+        if r == 0 and d == 0:   # base case; all moves are used up
+            # self.paths.append(path)
+            self.pathcount += 1
+        else:
+            if r > 0: self.pathfind(r-1, d)
+                # self.pathfind(path+"R", r-1, d)
+            if d > 0: self.pathfind(r, d-1)
+                # self.pathfind(path+"D", r, d-1)
         return
+
+    # use central binomial coefficient to calculate the number of paths
+    def run(self):
+        num = 20
+        answer = 0
+
+        answer = math.factorial(2*num) / (math.factorial(num)**2)
+        print(answer)
+        return
+
 # main code starts here
-
-
 t0 = time.time()
-euler = Euler14()
+euler = Euler15()
 euler.run()
 t1 = time.time()
 print("runtime:", t1-t0)
