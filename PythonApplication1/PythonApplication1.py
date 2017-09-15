@@ -1,6 +1,7 @@
 import sys
 import operator
 import time
+import timeit
 import numpy
 import itertools
 import math
@@ -110,7 +111,7 @@ class Euler8:
 
 
 class Euler9:
-    # runtime: 129.15s
+    # runtime : 129.15s
     def isPyTriplet(self, a, b, c):
         if(a**2 + b**2 == c**2):
             return True
@@ -131,7 +132,7 @@ class Euler9:
                         return
 
 class Euler10:
-    # runtime: 20.58595037460327
+    # runtime : 20.58595037460327
     # TODO: since 2 is a special case, reduce size of the sieve from 2m -> 1m
     #       also try using bit flipping
     # given a prime number, returns the next prime number in sequence
@@ -181,7 +182,7 @@ class Euler10:
 
 
 class Euler11:
-    # runtime: 0.01751232147216797
+    # runtime : 0.01751232147216797
     size = 4    # number of items to multiply (4 in problem 11)
 
     def getLargest(self, matrix) :
@@ -251,8 +252,8 @@ class Euler11:
         print(largest)
 
 class Euler12: 
-    # answer : 76576500
-    # runtime: 140.14999842643738
+    # answer  : 76576500
+    # runtime : 140.14999842643738
     # TODO: use prime factorization to solve
     
     def getDivisors(self, n) :  # returns the number of divisors for a number
@@ -283,11 +284,11 @@ class Euler12:
             if(length > longest) : longest = length     # for debugging
         
         print("longest:", longest)
-        print("answer :", tri)
+        print("answer  :", tri)
 
 class Euler13: 
-    # answer : 5537376230
-    # runtime: 0.0010006427764892578
+    # answer  : 5537376230
+    # runtime : 0.0010006427764892578
 
     def run(self):
         text = """37107287533902102798797998220837590246510135740250
@@ -396,8 +397,8 @@ class Euler13:
         print(str(num)[0:10])
 
 class Euler14: 
-    # answer : 837799
-    # runtime: 69.31155300140381
+    # answer  : 837799
+    # runtime : 69.31155300140381
     # note: using bitwise operations did not affect runtime, nor did not using membership function for dict
 
     def run(self): 
@@ -426,8 +427,8 @@ class Euler14:
         print("answer:", maxchain)
 
 class Euler14_2:
-    # answer : 837799
-    # runtime: 49.1329185962677
+    # answer  : 837799
+    # runtime : 49.1329185962677
     # note: second try, using recursion to cache all path sizes for a number
     #       starting from 1,000,000 and going down to 2 did not change runtime
     collatz = {1:1}
@@ -460,8 +461,8 @@ class Euler14_2:
         print("answer:", maxchain)
 
 class Euler15: 
-    # answer : 137846528820
-    # runtime: 0.0005002021789550781
+    # answer  : 137846528820
+    # runtime : 0.0005002021789550781
 
     pathcount = 0
 
@@ -491,9 +492,167 @@ class Euler15:
         print(answer)
         return
 
+class Euler16:
+    # answer  : 1366
+    # runtime : 0.002086851509824238
+    # TODO: probably some mathematical secrets behind this one as well
+    def run(self):
+        num = 2 ** 1000
+        sum = 0
+
+        while(num > 0):
+            sum += num % 10
+            num = num // 10  # need to use floor division to avoid float precision issue
+            # print(num, num % 10)
+        print(sum)
+        return
+
+    # answer  : 1366
+    # runtime : 0.002156555771320417
+    def run2(self):
+        num = 0
+        print(sum( int(n) for n in str(2**1000) ))
+
+
+class Euler17:
+    # answer  : 21124
+    # runtime : 0.001244841136290647
+
+    worddict = {1:"one", 2:"two", 3:"three", 4:"four", 5:"five"\
+                , 6:"six", 7:"seven", 8:"eight", 9:"nine"\
+                , 10:"ten", 11:"eleven", 12:"twelve", 13:"thirteen"\
+                , 14:"fourteen", 15:"fifteen", 16:"sixteen", 17:"seventeen"\
+                , 18:"eighteen", 19:"nineteen", 20:"twenty", 30:"thirty"\
+                , 40:"forty", 50:"fifty", 60:"sixty", 70:"seventy"\
+                , 80:"eighty", 90:"ninety", 100:"hundred", 1000:"thousand"}
+    
+    def run(self):
+        num = 1000
+        length = 0
+        length100 = 0
+
+        # create a dictionary of lengths since im too lazy to type them out again
+        lendict = self.worddict.copy()
+        for key in lendict.keys():
+            lendict[key] = len(lendict[key])
+        lendict['and'] = 3
+
+        # calculate length of 1 ~ 99 first, then multiply it afterwards with hundreds added in
+        for i in range(1, 99+1):
+            if i in lendict:
+                length100 += lendict[i]
+            else: # twenty-one, thirty-one, forty-one etc. compound numbers
+                length100 += lendict[(i//10)*10] + lendict[i%10]
+
+        length += length100
+            
+        # calculate length of 100~1000 using the length of 1~99
+        for i in range(1, 10):
+            length += lendict[i] + lendict[100] # for the hundreds
+
+            nHundredAnd = lendict[i] + lendict[100] + lendict['and'] 
+            length += nHundredAnd * 99 + length100
+
+        # add "one thousand"
+        length += lendict[1] + lendict[1000]
+
+        print(length)
+        
+        return
+
+
+class Euler18: 
+    # answer  : 1074
+    # runtime : 0.0010836233044866023
+    # note    : took me 2 minutes to do it by hand, by crossing out numbers below 10 
+    #           and highlighting numbers higher than 80. just eyeing worked for this
+    #           small triangle
+    
+    triangle = """75
+                  95 64
+                  17 47 82
+                  18 35 87 10
+                  20 04 82 47 65
+                  19 01 23 75 03 34
+                  88 02 77 73 07 63 67
+                  99 65 04 28 06 16 70 92
+                  41 41 26 56 83 40 80 70 33
+                  41 48 72 33 47 32 37 16 94 29
+                  53 71 44 65 25 43 91 52 97 51 14
+                  70 11 33 28 77 73 17 78 39 68 17 57
+                  91 71 52 38 17 14 91 43 58 50 27 29 48
+                  63 66 04 68 89 53 67 30 73 16 69 87 40 31
+                  04 62 98 27 23 09 70 98 73 93 38 53 60 04 23"""
+    def run(self):
+        triList = []
+        # parse the triangle into list of lists
+        for line in self.triangle.splitlines():
+            temp = line.strip().split(' ')
+            triList.append(list(map(int, temp)))
+
+        # work up from the bottom to get the best solution
+        for i in range(len(triList)-2, -1, -1):
+            for j in range(0, len(triList[i])):
+                triList[i][j] += max(triList[i+1][j], triList[i+1][j+1])
+
+        print(triList[0][0])
+        return
+
+
+class Euler19: 
+    # answer  : 171
+    # runtime : 0.016649055293439973
+    # note    : solved without using datetime libraries
+
+    def run(self):
+        firstSuns = 0
+        year = 1900
+        month = 1
+        totalDays = 1   # use with mod 7 to get day of the week (mod7==0 means Sunday)
+        
+        # december is 0 for purposes of mod12
+        daysofmonth = {1:31, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 0:31}
+
+        # skip the first year
+        totalDays += 365
+        year = 1901
+
+        # mod the daycount of every 1st day of the month??
+        while year < 2001:
+            monthmod = month % 12
+
+            if totalDays % 7 == 0: firstSuns += 1
+
+            if monthmod == 2:       # february
+                if year % 4 == 0:   # leap year logic
+                    if year % 100 != 0 or year % 400 == 0: 
+                        totalDays += 29
+                else: 
+                    totalDays += 28    
+            
+            else:                   # all other months
+                totalDays += daysofmonth[monthmod]
+
+            if monthmod == 0: 
+                year += 1 # december -> january: add a year
+            
+            month += 1
+
+        print(firstSuns)
+        return
+
+
+class Euler20: 
+    # answer  : 648
+    # runtime : 0.0013709930205935467
+
+    def run(self):
+        num = math.factorial(100)
+        print(sum(int(n) for n in str(num)))
+        return
+
 # main code starts here
-t0 = time.time()
-euler = Euler15()
+t0 = timeit.default_timer()
+euler = Euler20()
 euler.run()
-t1 = time.time()
-print("runtime:", t1-t0)
+print(timeit.default_timer()-t0)
