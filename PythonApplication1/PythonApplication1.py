@@ -7,7 +7,7 @@ import itertools
 import math
 from functools import reduce
 
-class Util:
+class Util: 
     def isPrime(n):
         for i in range(2,int(n**0.5)+1):
             if n%i==0:
@@ -15,12 +15,12 @@ class Util:
             return True
 
 
-class Euler4:
+class Euler4: 
     def isPalindrome(n):
         return str(n) == str(n)[::-1]
 
 
-class Euler5:
+class Euler5: 
     def div20(n):
         for i in range(19, 3, -1):
             if (n % i != 0):
@@ -35,7 +35,7 @@ class Euler5:
         print(num)
 
 
-class Euler6:
+class Euler6: 
     def run():
         sqsum = 0
         sumsq = 0
@@ -48,7 +48,7 @@ class Euler6:
         print(sumsq-sqsum)
     
 
-class Euler7:
+class Euler7: 
     def isPrime(n):
         for i in range(2,int(n**0.5)+1):
             if n%i==0:
@@ -67,7 +67,7 @@ class Euler7:
         print(num)
 
 
-class Euler8:
+class Euler8: 
         
     def prod(n):
         return reduce(operator.mul,n)
@@ -110,7 +110,7 @@ class Euler8:
         print(largest)
 
 
-class Euler9:
+class Euler9: 
     # runtime : 129.15s
     def isPyTriplet(self, a, b, c):
         if(a**2 + b**2 == c**2):
@@ -131,7 +131,7 @@ class Euler9:
                         print("Found! ", a, b, c, "; sum = ", a+b+c, "; product = ", a*b*c)
                         return
 
-class Euler10:
+class Euler10: 
     # runtime : 20.58595037460327
     # TODO: since 2 is a special case, reduce size of the sieve from 2m -> 1m
     #       also try using bit flipping
@@ -181,7 +181,7 @@ class Euler10:
         print(sum)
 
 
-class Euler11:
+class Euler11: 
     # runtime : 0.01751232147216797
     size = 4    # number of items to multiply (4 in problem 11)
 
@@ -426,7 +426,7 @@ class Euler14:
         maxchain = max(collatz, key=collatz.get)
         print("answer:", maxchain)
 
-class Euler14_2:
+class Euler14_2: 
     # answer  : 837799
     # runtime : 49.1329185962677
     # note: second try, using recursion to cache all path sizes for a number
@@ -492,7 +492,7 @@ class Euler15:
         print(answer)
         return
 
-class Euler16:
+class Euler16: 
     # answer  : 1366
     # runtime : 0.002086851509824238
     # TODO: probably some mathematical secrets behind this one as well
@@ -514,7 +514,7 @@ class Euler16:
         print(sum( int(n) for n in str(2**1000) ))
 
 
-class Euler17:
+class Euler17: 
     # answer  : 21124
     # runtime : 0.001244841136290647
 
@@ -651,8 +651,122 @@ class Euler20:
         print(sum(int(n) for n in str(num)))
         return
 
+
+class Euler21: 
+    # title   : Amicable numbers
+    # answer  : 31626
+    # runtime : 4.251703371163218
+
+    def d(self, n): 
+        mySum = 1
+        
+        for i in range(2, int(n**0.5)+1):
+            if n % i == 0:
+                mySum += i
+                if i != n/i:
+                    mySum += n/i  # 2 birds with 1 stone!
+
+        return mySum
+
+    def run(self): 
+        
+        maxNum = 10000
+        amicableSum = 0
+
+        # TODO: need to reduce/optimize to avoid doing double work
+        for i in range(2,maxNum+1):
+            divSum = self.d(i)
+            if(self.d(divSum) == i and i != divSum): 
+                amicableSum += i
+
+        print(amicableSum)
+        return
+
+
+class Euler22: 
+    # title   : Names scores
+    # answer  : 871198282
+    # runtime : 0.19794342494240846
+    def getScore(self, name):
+        score = 0
+        for char in name:
+            score += ord(char)-64
+        return score      
+
+    def run(self): 
+        scoreSum = 0
+        names = []
+
+        with open("p022_names.txt",'r') as f:
+            for line in f:
+                # text += line
+                names = line.strip('"').split('","')
+        # print(names)
+        names.sort()
+
+        for i in range(len(names)):
+            scoreSum += (i+1)*self.getScore(names[i])
+    
+        print(scoreSum)
+        
+        return
+
+
+class Euler23: 
+    # title   : Non-abundant sums
+    # answer  : 
+    # runtime : 
+
+    def getDivSum(self, n):  # returns the sum of all proper divisors for a number
+        divsum = 1
+        sqrt = n**0.5
+        if n % 2 == 0:
+            for i in range(2, int(sqrt)+1, 1):
+                if n % i == 0:
+                    divsum += i + (n//i)
+                    # print(i, n//i)
+                    if i == sqrt:   # remove duplicate entry for perfect square
+                        divsum -= i
+        return divsum
+    
+    def markMultiples(self, flags, abundants, n): 
+        for i in range(n*2, len(flags), n):
+            flags[i] = True
+            abundants[i] = True
+        return
+
+    def run(self): 
+        upper = 28124
+        nonSum = 0
+        nonAbundants = []
+        # find a list of 'abundant' numbers, up to 28123-12 = 28111
+        # for any abundant number n and any constant k, kn is also an abundant number!
+        # try using a 'sieve' for this?
+
+        flags = [False]*upper  # set flags[n] to 'True' if n is abundant
+        abundants = [False]*upper
+
+        for i in range(12, upper):
+            if flags[i]: continue   # skip if number is already marked as a multiple of an abundant
+            if self.getDivSum(i) > i:   # if i is abundant
+                abundants[i] = True
+                self.markMultiples(flags, abundants, i)
+            # check if sum of 2 abundants, only need to check numbers smaller than current number
+            
+        
+
+        for i in range(1, len(flags)):
+            if not flags[i]: 
+                nonSum += i
+                nonAbundants.append(i)
+
+        print(nonAbundants)
+        print(nonSum)
+        return
+
+
 # main code starts here
 t0 = timeit.default_timer()
-euler = Euler20()
+euler = Euler23()
 euler.run()
 print(timeit.default_timer()-t0)
