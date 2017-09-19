@@ -714,59 +714,111 @@ class Euler22:
 
 class Euler23: 
     # title   : Non-abundant sums
-    # answer  : 
-    # runtime : 
+    # answer  : 4179871
+    # runtime : 150.13263694642308
+    # note    : for any abundant number n and any constant k, kn is also an abundant number!
 
     def getDivSum(self, n):  # returns the sum of all proper divisors for a number
         divsum = 1
         sqrt = n**0.5
-        if n % 2 == 0:
-            for i in range(2, int(sqrt)+1, 1):
-                if n % i == 0:
-                    divsum += i + (n//i)
-                    # print(i, n//i)
-                    if i == sqrt:   # remove duplicate entry for perfect square
-                        divsum -= i
+        # if n % 2 == 0:
+        for i in range(2, int(sqrt)+1):
+            if n % i == 0:
+                divsum += i + (n//i)
+                # print(i, n//i)
+                if i == sqrt:   # remove duplicate entry for perfect square
+                    divsum -= i
         return divsum
-    
-    def markMultiples(self, flags, abundants, n): 
-        for i in range(n*2, len(flags), n):
-            flags[i] = True
-            abundants[i] = True
+
+    def addMultiples(self, abundants, n):
+        for i in range(n*2, len(abundants), n):
+            abundants.add(n)
         return
 
     def run(self): 
         upper = 28124
         nonSum = 0
-        nonAbundants = []
-        # find a list of 'abundant' numbers, up to 28123-12 = 28111
-        # for any abundant number n and any constant k, kn is also an abundant number!
-        # try using a 'sieve' for this?
-
-        flags = [False]*upper  # set flags[n] to 'True' if n is abundant
-        abundants = [False]*upper
-
-        for i in range(12, upper):
-            if flags[i]: continue   # skip if number is already marked as a multiple of an abundant
-            if self.getDivSum(i) > i:   # if i is abundant
-                abundants[i] = True
-                self.markMultiples(flags, abundants, i)
-            # check if sum of 2 abundants, only need to check numbers smaller than current number
-            
         
+        # use sets because there should not be any duplicates
+        abundants = set()
+        abundantSums = set()
 
-        for i in range(1, len(flags)):
-            if not flags[i]: 
-                nonSum += i
-                nonAbundants.append(i)
+        # get all abundant numbers
+        for i in range(12, upper):
+            if i in abundants: continue     # skip if number is already marked as a multiple of an abundant
+            if self.getDivSum(i) > i:
+                abundants.add(i)
+                self.addMultiples(abundants, i)
+        
+        # get all combinations of sum of 2 abundant numbers
+        for i in abundants:
+            for j in abundants:
+                if i+j < upper:
+                    abundantSums.add(i+j)
+                else:
+                    break
+        
+        for i in range(1, upper):
+            if i not in abundantSums: nonSum += i
 
-        print(nonAbundants)
         print(nonSum)
         return
 
 
+class Euler24: 
+    # title   : Lexicographic permutations 
+    # answer  : 2783915460
+    # runtime : 0.00047681135931434954
+    # note    : for 10 numbers (0~9), there are 10! = 3,628,800 permutations total
+    #           There should be 10!/10 = 9! = 362,880 numbers that start with 0, 9! that start with 1, and so on
+    #           Millionth number should then start with 2, where '2 013456789' is (362,880*2 + 1) = 725,761st permutation.
+    #           Going down the ladder (1,000,000 - 2 * 9! = 274,240):
+    #           8! = 40,320. 8! fits 6 times into 274,240. 7th number (excl. 2) = 7. now at '27 01345689'. 274,240 - 241,920 = 32,320. 
+    #           7! = 5,040. 7! fits 6 times into 32,320. 7th number (excl. 2 and 7) = 8. now at '278 0134569'. 32,320 - 30,240 = 2,080.
+    #           ...and so on.
+
+    def run(self):
+        numlist = ['0','1','2','3','4','5','6','7','8','9']
+        index = 1000000
+        perm = ''
+
+        remainder = index-1     # we want the 1,000,000th permutation, not 1,000,001st permutation
+        for i in range(9, -1, -1):
+            n = math.factorial(i)
+            perm += numlist.pop(remainder//n)
+            remainder = remainder % n
+        
+        print(perm)
+
+
+class Euler25: 
+    # title   : 1000-digit Fibonacci number
+    # answer  : 4782
+    # runtime : 0.07371589141701067
+
+    def nextFib(self, a, b): 
+        return a+b
+
+    def run(self): 
+        a = 1
+        b = 1
+        thousand = 10**999
+
+        count = 2
+
+        # keep fibbin' while it has less than 1000 digits
+        while b // thousand < 1:
+            next = self.nextFib(a, b)
+            a = b
+            b = next
+            count += 1
+
+        print(count)            
+
+
+
 # main code starts here
 t0 = timeit.default_timer()
-euler = Euler23()
+euler = Euler25()
 euler.run()
 print(timeit.default_timer()-t0)
